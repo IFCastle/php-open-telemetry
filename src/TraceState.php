@@ -17,16 +17,16 @@ namespace IfCastle\OpenTelemetry;
  */
 class TraceState                    implements AttributesInterface
 {
-    public const MAX_LIST_MEMBERS       = 32; //@see https://www.w3.org/TR/trace-context/#tracestate-header-field-values
-    public const MAX_COMBINED_LENGTH    = 512; //@see https://www.w3.org/TR/trace-context/#tracestate-limits
-    public const LIST_MEMBERS_SEPARATOR = ',';
-    public const LIST_MEMBER_KEY_VALUE_SPLITTER = '=';
-    private const VALID_KEY_CHAR_RANGE = '[_0-9a-z-*\/]';
-    private const VALID_KEY = '[a-z]' . self::VALID_KEY_CHAR_RANGE . '{0,255}';
-    private const VALID_VENDOR_KEY = '[a-z0-9]' . self::VALID_KEY_CHAR_RANGE . '{0,240}@[a-z]' . self::VALID_KEY_CHAR_RANGE . '{0,13}';
-    private const VALID_KEY_REGEX = '/^(?:' . self::VALID_KEY . '|' . self::VALID_VENDOR_KEY . ')$/';
-    private const VALID_VALUE_BASE_REGEX = '/^[ -~]{0,255}[!-~]$/';
-    private const INVALID_VALUE_COMMA_EQUAL_REGEX = '/,|=/';
+    public const int MAX_LIST_MEMBERS             = 32; //@see https://www.w3.org/TR/trace-context/#tracestate-header-field-values
+    public const int MAX_COMBINED_LENGTH          = 512; //@see https://www.w3.org/TR/trace-context/#tracestate-limits
+    public const string LIST_MEMBERS_SEPARATOR         = ',';
+    public const string LIST_MEMBER_KEY_VALUE_SPLITTER = '=';
+    private const string VALID_KEY_CHAR_RANGE = '[_0-9a-z-*\/]';
+    private const string VALID_KEY        = '[a-z]' . self::VALID_KEY_CHAR_RANGE . '{0,255}';
+    private const string VALID_VENDOR_KEY = '[a-z0-9]' . self::VALID_KEY_CHAR_RANGE . '{0,240}@[a-z]' . self::VALID_KEY_CHAR_RANGE . '{0,13}';
+    private const string VALID_KEY_REGEX          = '/^(?:' . self::VALID_KEY . '|' . self::VALID_VENDOR_KEY . ')$/';
+    private const string VALID_VALUE_BASE_REGEX          = '/^[ -~]{0,255}[!-~]$/';
+    private const string INVALID_VALUE_COMMA_EQUAL_REGEX = '/,|=/';
     
     use AttributesTrait;
     
