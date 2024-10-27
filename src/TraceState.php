@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace IfCastle\OpenTelemetry;
@@ -10,13 +11,14 @@ namespace IfCastle\OpenTelemetry;
  *      - Get value for a given key
  *      - Add a new key/value pair
  *      - Update an existing value for a given key
- *      - Delete a key/value pair
+ *      - Delete a key/value pair.
  *
  * @see https://www.w3.org/TR/trace-context/#tracestate-header
  * @see https://github.com/open-telemetry/opentelemetry-specification/blob/master/specification/trace/api.md#tracestate
  */
-class TraceState                    implements AttributesInterface
+class TraceState implements AttributesInterface
 {
+    use AttributesTrait;
     public const int MAX_LIST_MEMBERS             = 32; //@see https://www.w3.org/TR/trace-context/#tracestate-header-field-values
     public const int MAX_COMBINED_LENGTH          = 512; //@see https://www.w3.org/TR/trace-context/#tracestate-limits
     public const string LIST_MEMBERS_SEPARATOR         = ',';
@@ -27,63 +29,61 @@ class TraceState                    implements AttributesInterface
     private const string VALID_KEY_REGEX          = '/^(?:' . self::VALID_KEY . '|' . self::VALID_VENDOR_KEY . ')$/';
     private const string VALID_VALUE_BASE_REGEX          = '/^[ -~]{0,255}[!-~]$/';
     private const string INVALID_VALUE_COMMA_EQUAL_REGEX = '/,|=/';
-    
-    use AttributesTrait;
-    
-    public function __construct(string $rawTraceState = null)
+
+    public function __construct(?string $rawTraceState = null)
     {
-        if ($rawTraceState === null || trim($rawTraceState) === '') {
+        if ($rawTraceState === null || \trim($rawTraceState) === '') {
             return;
         }
-        
+
         $this->attributes           = $this->parse($rawTraceState);
     }
-    
+
     public function setAttributes(array $attributes): static
     {
         $this->validateKeyValues($attributes);
-        
+
         $this->attributes           = $attributes;
-        
+
         return $this;
     }
-    
+
     public function addAttributes(array $attributes): static
     {
         $this->validateKeyValues($attributes);
-        
-        $this->attributes           = array_merge($this->attributes, $attributes);
-        
+
+        $this->attributes           = \array_merge($this->attributes, $attributes);
+
         return $this;
     }
-    
+
     protected function validateKeyValues(array $attributes): void
     {
         foreach ($attributes as $key => $value) {
-            
-            if($this->validateKey($key)) {
-                throw new \Error('TraceState invalid key: '.$key);
+
+            if ($this->validateKey($key)) {
+                throw new \Error('TraceState invalid key: ' . $key);
             }
-            
-            if($this->validateValue($value)) {
-                throw new \Error('TraceState invalid value: '.$value);
+
+            if ($this->validateValue($value)) {
+                throw new \Error('TraceState invalid value: ' . $value);
             }
         }
     }
-    
+
     public function __toString(): string
     {
         if ($this->attributes === []) {
             return '';
         }
-        $traceStateString='';
-        foreach (array_reverse($this->attributes) as $k => $v) {
-            $traceStateString .=$k . self::LIST_MEMBER_KEY_VALUE_SPLITTER . $v . self::LIST_MEMBERS_SEPARATOR;
+        $traceStateString = '';
+        foreach (\array_reverse($this->attributes) as $k => $v) {
+            $traceStateString .= $k . self::LIST_MEMBER_KEY_VALUE_SPLITTER . $v . self::LIST_MEMBERS_SEPARATOR;
         }
-        
-        return rtrim($traceStateString, ',');
+
+        return \rtrim($traceStateString, ',');
     }
-    
+
     /**
      * Parse the raw trace state header into the TraceState object. Since new or updated entries must
      * be added to the beginning of the list, the key-value pairs in the TraceState object will be
@@ -101,41 +101,41 @@ class TraceState                    implements AttributesInterface
      */
     private function parse(string $rawTraceState): array
     {
-        if (strlen($rawTraceState) > self::MAX_COMBINED_LENGTH) {
+        if (\strlen($rawTraceState) > self::MAX_COMBINED_LENGTH) {
             //self::logWarning('tracestate discarded, exceeds max combined length: ' . self::MAX_COMBINED_LENGTH);
-            
+
             return [];
         }
-        
+
         $parsedTraceState = [];
-        
-        $listMembers                = explode(self::LIST_MEMBERS_SEPARATOR, $rawTraceState);
-        
-        if (count($listMembers) > self::MAX_LIST_MEMBERS) {
+
+        $listMembers                = \explode(self::LIST_MEMBERS_SEPARATOR, $rawTraceState);
+
+        if (\count($listMembers) > self::MAX_LIST_MEMBERS) {
             //self::logWarning('tracestate discarded, too many members');
-            
+
             return [];
         }
-        
+
         foreach ($listMembers as $listMember) {
-            $vendor = explode(self::LIST_MEMBER_KEY_VALUE_SPLITTER, trim($listMember));
-            
+            $vendor = \explode(self::LIST_MEMBER_KEY_VALUE_SPLITTER, \trim($listMember));
+
             // There should only be one list-member per vendor separated by '='
-            if (count($vendor) !== 2 || !$this->validateKey($vendor[0]) || !$this->validateValue($vendor[1])) {
+            if (\count($vendor) !== 2 || !$this->validateKey($vendor[0]) || !$this->validateValue($vendor[1])) {
                 //self::logWarning('tracestate discarded, invalid member: ' . $listMember);
-                
+
                 return [];
             }
             $parsedTraceState[$vendor[0]] = $vendor[1];
         }
-        
+
         /*
          * Reversing the tracestate ensures the new entries added to the TraceState object are at
          * the beginning when we reverse it back during __toString().
         */
-        return array_reverse($parsedTraceState);
+        return \array_reverse($parsedTraceState);
     }
-    
+
     /**
      * The Key is an opaque string that is an identifier for a vendor. It can be up
      * to 256 characters and MUST begin with a lowercase letter or a digit, and can
@@ -148,9 +148,9 @@ class TraceState                    implements AttributesInterface
      */
     private function validateKey(string $key): bool
     {
-        return preg_match(self::VALID_KEY_REGEX, $key) !== 0;
+        return \preg_match(self::VALID_KEY_REGEX, $key) !== 0;
     }
-    
+
     /**
      * The value is an opaque string containing up to 256 printable ASCII [RFC0020]
      * characters (i.e., the range 0x20 to 0x7E) except comma (,) and (=). Note that
@@ -160,7 +160,7 @@ class TraceState                    implements AttributesInterface
      */
     private function validateValue(string $key): bool
     {
-        return (preg_match(self::VALID_VALUE_BASE_REGEX, $key) !== 0)
-               && (preg_match(self::INVALID_VALUE_COMMA_EQUAL_REGEX, $key) === 0);
+        return (\preg_match(self::VALID_VALUE_BASE_REGEX, $key) !== 0)
+               && (\preg_match(self::INVALID_VALUE_COMMA_EQUAL_REGEX, $key) === 0);
     }
 }

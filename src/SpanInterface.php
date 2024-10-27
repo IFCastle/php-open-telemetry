@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace IfCastle\OpenTelemetry;
@@ -6,11 +7,11 @@ namespace IfCastle\OpenTelemetry;
 /**
  * @see https://github.com/open-telemetry/opentelemetry-specification/blob/v1.6.1/specification/trace/api.md#span-operations
  */
-interface SpanInterface             extends SpanElementInterface,
-                                            TelemetryLoggerInterface,
-                                            AttributesInterface,
-                                            ElementInterface,
-                                            TimestampInterface
+interface SpanInterface extends SpanElementInterface,
+    TelemetryLoggerInterface,
+    AttributesInterface,
+    ElementInterface,
+    TimestampInterface
 {
     public function getParentSpanId(): ?string;
     public function getTraceFlags(): TraceFlagsEnum;
@@ -27,7 +28,7 @@ interface SpanInterface             extends SpanElementInterface,
     public function setStatus(StatusCodeEnum $status, string $description = ''): static;
     public function isRecording(): bool;
     public function hasEnded(): bool;
-    public function end(int $endEpochNanos = null): void;
+    public function end(?int $endEpochNanos = null): void;
     public function getLinks(): array;
     public function addLink(LinkInterface $link): static;
     public function getInstrumentationScope(): ?InstrumentationScopeInterface;

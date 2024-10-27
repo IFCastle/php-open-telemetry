@@ -19,8 +19,8 @@ interface TelemetryLoggerInterface extends LoggerInterface
      * @param   iterable<string, scalar|null>   $attributes     Key-value pairs of event attributes.
      * @param   int|null                        $timestamp      Unix timestamp in nanoseconds.
      */
-    public function addEvent(string $name, iterable $attributes = [], int $timestamp = null): void;
-    
+    public function addEvent(string $name, iterable $attributes = [], ?int $timestamp = null): void;
+
     /**
      * Add exception to the log.
      *

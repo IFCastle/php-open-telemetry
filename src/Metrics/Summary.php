@@ -1,9 +1,7 @@
 <?php
+
 declare(strict_types=1);
 
 namespace IfCastle\OpenTelemetry\Metrics;
 
-class Summary             extends MeterAbstract
-{
-    
-}
+class Summary extends MeterAbstract {}

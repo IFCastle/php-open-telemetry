@@ -1,18 +1,18 @@
 <?php
+
 declare(strict_types=1);
 
 namespace IfCastle\OpenTelemetry;
 
 use Psr\Log\LoggerTrait;
 
-class Tracer                        implements TracerInterface
+class Tracer implements TracerInterface
 {
     use LoggerTrait;
-    
+
     /**
      * If true, all logs will be sent as SpanEvents.
-     * (need for Jaeger. because they don't support the OpenTelemetry Log concept)
-     * @var bool
+     * (need for Jaeger. because they don't support the OpenTelemetry Log concept).
      */
     protected bool $populateLogsAsSpanEvents = false;
     /**
@@ -30,36 +30,32 @@ class Tracer                        implements TracerInterface
     protected array $instrumentationScopes = [];
     protected InstrumentationScopeInterface $selfInstrumentationScope;
     protected Trace $selfTrace;
-    
+
     public function __construct(
         protected ResourceInterface $systemResource,
         protected TelemetryContextResolverInterface $telemetryContextResolver,
         protected TelemetryFlushStrategyInterface|null $telemetryFlushStrategy = null
-    )
-    {
+    ) {
         // Create self instrumentation scope
         $this->selfInstrumentationScope = new InstrumentationScope('tracer');
-        $this->instrumentationScopes['i'.spl_object_id($this->selfInstrumentationScope)] = $this->selfInstrumentationScope;
+        $this->instrumentationScopes['i' . \spl_object_id($this->selfInstrumentationScope)] = $this->selfInstrumentationScope;
         $this->selfTrace            = new Trace($this->systemResource);
     }
-    
+
     /**
      * PSR-3 log adapter method.
      * Translates PSR-3 log messages into OpenTelemetry log.
      *
-     * @param                    $level
-     * @param \Stringable|string $message
      * @param array<string,scalar|scalar[]> $context
      *
-     * @return void
      */
     public function log($level, \Stringable|string $message, array $context = []): void
     {
         $this->registerLog($this->selfInstrumentationScope, $level, $message, $context);
     }
-    
+
     #[\Override]
-    public function addEvent(string $name, iterable $attributes = [], int $timestamp = null): void
+    public function addEvent(string $name, iterable $attributes = [], ?int $timestamp = null): void
     {
         $this->telemetryContextResolver
             ->resolveTelemetryContext()
@@ -67,68 +63,67 @@ class Tracer                        implements TracerInterface
             ?->getCurrentSpan()
             ?->addEvent($name, $attributes, $timestamp);
     }
-    
+
     public function getResource(): ResourceInterface
     {
         return $this->systemResource;
     }
-    
+
     public function newTelemetryContext(): TelemetryContextInterface
     {
         return $this->telemetryContextResolver->newTelemetryContext();
     }
-    
+
     public function createTrace(): TraceInterface
     {
         return new Trace($this->systemResource);
     }
-    
+
     public function endTrace(TraceInterface $trace): void
     {
-        $this->instrumentationScopes    = array_merge($this->instrumentationScopes, $trace->getInstrumentationScopes());
-        $this->spans                    = array_merge_recursive($this->spans, $trace->getSpansByInstrumentationScope());
+        $this->instrumentationScopes    = \array_merge($this->instrumentationScopes, $trace->getInstrumentationScopes());
+        $this->spans                    = \array_merge_recursive($this->spans, $trace->getSpansByInstrumentationScope());
         $this->telemetryFlushStrategy?->flushTrace($trace);
     }
-    
+
     public function registerLog(InstrumentationScopeInterface    $instrumentationScope,
-                                string                           $level,
-                                float|array|bool|int|string|null $body,
-                                iterable                         $attributes = []
-    ): void
-    {
+        string                           $level,
+        float|array|bool|int|string|null $body,
+        iterable                         $attributes = []
+    ): void {
         // ALGORITHM:
         // We place telemetry data into a preliminary container conforming to the OpenTelemetry standard
         // but do not serialize the data to save processor time.
         // The data will be serialized later, at the time of transmission,
         // in the background and will not impact the execution of the request.
-        
+
         $telemetryContext           = $this->telemetryContextResolver->resolveTelemetryContext();
-        
-        if($this->populateLogsAsSpanEvents) {
+
+        if ($this->populateLogsAsSpanEvents) {
             $span                   = $telemetryContext->getCurrentTrace()?->getCurrentSpan();
-            
+
             // If we have no current span, then we need to create a new span
-            if($span === null) {
+            if ($span === null) {
                 $span               = $this->createSpan('log', SpanKindEnum::INTERNAL, $instrumentationScope, $attributes);
             }
-            
+
             $name                   = $level;
             $attributes['log.level'] = $level;
-            
-            if(!empty($attributes['log.subject'])) {
+
+            if (!empty($attributes['log.subject'])) {
                 $name               = $attributes['log.subject'];
                 $attributes['log.report'] = $body;
             } elseif (!empty($attributes['exception.message'])) {
                 $name               = $attributes['exception.message'];
                 $attributes['log.report'] = $body;
-            } elseif (is_string($body)) {
+            } elseif (\is_string($body)) {
                 $name               = $body;
             }
-            
+
             $span->addEvent($name, $attributes, SystemClock::now());
             return;
         }
-        
+
         $logRecord                  = new Log(
             SystemClock::now(),
             $level,
@@ -138,25 +133,25 @@ class Tracer                        implements TracerInterface
             $telemetryContext->getSpanId(),
             $telemetryContext->getTraceFlags()
         );
-        
+
         // Collect logs in to structure:
         //
         // [*] ResourceLogs
         //     |- InstrumentationLogs
         //            |- LogRecords
         //
-        
-        $instrumentationScopeId     = 'i'.spl_object_id($instrumentationScope);
-        
+
+        $instrumentationScopeId     = 'i' . \spl_object_id($instrumentationScope);
+
         // Remember the InstrumentationScope for future use
-        if(false === array_key_exists($instrumentationScopeId, $this->instrumentationScopes)) {
+        if (false === \array_key_exists($instrumentationScopeId, $this->instrumentationScopes)) {
             $this->instrumentationScopes[$instrumentationScopeId] = $instrumentationScope;
         }
-        
+
         // So LogRecords are grouped by Resource (like /some/url/) and InstrumentationScope (like DataBase, HttpClient, Service).
         // And inherited from the current Span or Trace ResourceInfo.
         // So all logs for REST API request (or RPC, or WorkerRequest) will be grouped by ResourceInfo of the request.
-        
+
         //
         // [*] TraceContext
         //     |- Trace
@@ -172,48 +167,47 @@ class Tracer                        implements TracerInterface
 
         // All metrics will be grouped by ResourceInfo and InstrumentationScope.
         // But ResourceInfo is the same for all metrics
-        
-        if(false === array_key_exists($instrumentationScopeId, $this->instrumentationScopes)) {
+
+        if (false === \array_key_exists($instrumentationScopeId, $this->instrumentationScopes)) {
             $this->logs[$instrumentationScopeId] = [];
         }
-        
+
         $this->logs[$instrumentationScopeId][] = $logRecord;
     }
-    
+
     public function recordException(\Throwable $throwable, iterable $attributes = []): void
     {
         $trace                      = $this->telemetryContextResolver->resolveTelemetryContext()->getCurrentTrace();
-        
-        if($trace === null) {
+
+        if ($trace === null) {
             return;
         }
-        
+
         $trace->getCurrentSpan()?->recordException($throwable, $attributes);
     }
-    
+
     public function createSpan(
         string                        $spanName,
         SpanKindEnum                  $spanKind,
-        InstrumentationScopeInterface $instrumentationScope = null,
+        ?InstrumentationScopeInterface $instrumentationScope = null,
         array                         $attributes = []
-    ): SpanInterface
-    {
+    ): SpanInterface {
         $trace                      = $this->telemetryContextResolver->resolveTelemetryContext()->getCurrentTrace() ?? $this->defineTrace();
         return $trace->createSpan($spanName, $spanKind, $instrumentationScope, $attributes);
     }
-    
-    public function endSpan(SpanInterface $span = null): void
+
+    public function endSpan(?SpanInterface $span = null): void
     {
         $this->telemetryContextResolver->resolveTelemetryContext()->getCurrentTrace()?->endSpan($span);
     }
-    
+
     public function cleanTelemetry(): void
     {
         $this->logs                 = [];
         $this->spans                = [];
         $this->instrumentationScopes = [];
     }
-    
+
     protected function defineTrace(): TraceInterface
     {
         return new Trace($this->systemResource);

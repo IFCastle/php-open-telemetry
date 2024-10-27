@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace IfCastle\OpenTelemetry;
@@ -16,12 +17,12 @@ readonly class Log
         public ?string              $spanId,
         public ?TraceFlagsEnum      $flags,
     ) {}
-    
+
     public function getSeverityNumber(): int
     {
         return $this->errorLevelToSeverityNumber($this->level);
     }
-    
+
     protected function errorLevelToSeverityNumber(string $level): int
     {
         // According to OpenTelemetry specification

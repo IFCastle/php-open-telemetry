@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace IfCastle\OpenTelemetry\Metrics;
@@ -15,7 +16,7 @@ interface MeterProviderInterface
         array                         $attributes = [],
         bool                          $isReset = false
     ): MeterInterface;
-    
+
     public function registerUpDownCounter(
         InstrumentationScopeInterface $instrumentationScope,
         string                        $name,
@@ -24,7 +25,7 @@ interface MeterProviderInterface
         array                         $attributes = [],
         bool                          $isReset = false
     ): MeterInterface;
-    
+
     public function registerGauge(
         InstrumentationScopeInterface $instrumentationScope,
         string                        $name,
@@ -33,7 +34,7 @@ interface MeterProviderInterface
         array                         $attributes = [],
         bool                          $isReset = false
     ): MeterInterface;
-    
+
     public function registerHistogram(
         InstrumentationScopeInterface $instrumentationScope,
         string                        $name,
@@ -42,7 +43,7 @@ interface MeterProviderInterface
         array                         $attributes = [],
         bool                          $isReset = false
     ): MeterInterface;
-    
+
     public function registerSummary(
         InstrumentationScopeInterface $instrumentationScope,
         string                        $name,
@@ -51,7 +52,7 @@ interface MeterProviderInterface
         array                         $attributes = [],
         bool                          $isReset = false
     ): MeterInterface;
-    
+
     public function registerState(
         InstrumentationScopeInterface $instrumentationScope,
         string                        $name,
