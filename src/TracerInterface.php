@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace IfCastle\OpenTelemetry;
 
-interface TracerInterface
+interface TracerInterface extends TelemetryLoggerInterface
 {
     public function getResource(): ResourceInterface;
     
@@ -26,16 +26,8 @@ interface TracerInterface
         InstrumentationScopeInterface $instrumentationScope,
         string $level,
         array|string|bool|int|float|null $body,
-        array $attributes           = []
+        iterable $attributes = []
     ): void;
-    
-    /**
-     * Add an exception to the telemetry span context (if defined).
-     *
-     * @param \Throwable $throwable
-     * @param array      $attributes
-     */
-    public function registerException(\Throwable $throwable, array $attributes = []): void;
     
     public function cleanTelemetry(): void;
 }

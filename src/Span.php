@@ -3,11 +3,15 @@ declare(strict_types=1);
 
 namespace IfCastle\OpenTelemetry;
 
+use Psr\Log\LoggerTrait;
+use Psr\Log\LogLevel;
+
 class Span                          implements SpanInterface
 {
     use ElementTrait;
     use AttributesTrait;
     use SpanElementTrait;
+    use LoggerTrait;
     
     protected ?\WeakReference $trace = null;
     protected SpanKindEnum $kind     = SpanKindEnum::INTERNAL;
@@ -42,6 +46,30 @@ class Span                          implements SpanInterface
         $this->traceState           = new TraceState();
         
         $this->startTime            = SystemClock::now();
+    }
+    
+    /**
+     * PSR-3 log adapter method.
+     * Translates PSR-3 log messages into OpenTelemetry Span-events.
+     *
+     * @param                    $level
+     * @param \Stringable|string $message
+     * @param array<string,scalar|scalar[]> $context
+     *
+     * @return void
+     */
+    public function log($level, \Stringable|string $message, array $context = []): void
+    {
+        if($context['exception'] instanceof \Throwable) {
+            $this->recordException($context['exception'], $context);
+            return;
+        }
+        
+        if(array_key_exists('severity', $context)) {
+            $context['severity']    = $level;
+        }
+        
+        $this->addEvent($message, $context);
     }
     
     protected function getTrace(): ?TraceInterface
@@ -104,33 +132,31 @@ class Span                          implements SpanInterface
         return $this->events;
     }
     
-    public function addEvent(string $name, iterable $attributes = [], int $timestamp = null): static
+    public function addEvent(string $name, iterable $attributes = [], int $timestamp = null): void
     {
         if($this->hasEnded) {
-            return $this;
+            return;
         }
         
         $this->events[]             = new Event($name, $attributes, $timestamp);
-        
-        return $this;
     }
     
-    public function recordException(\Throwable $exception, array $attributes = []): static
+    public function recordException(\Throwable $throwable, iterable $attributes = []): void
     {
         if($this->hasEnded) {
-            return $this;
+            return;
         }
         
         // Automatically set status to ERROR
         $this->status               = StatusCodeEnum::STATUS_ERROR;
         
+        $attributes                 = iterator_to_array($attributes);
+        
         if($attributes === []) {
-            $attributes             = ExceptionFormatter::buildAttributes($exception);
+            $attributes             = ExceptionFormatter::buildAttributes($throwable);
         }
         
         $this->events[]             = new Event('exception', $attributes, SystemClock::now());
-        
-        return $this;
     }
     
     public function getStatus(): StatusCodeEnum

@@ -3,8 +3,12 @@ declare(strict_types=1);
 
 namespace IfCastle\OpenTelemetry;
 
+use Psr\Log\LoggerTrait;
+
 class Tracer                        implements TracerInterface
 {
+    use LoggerTrait;
+    
     /**
      * If true, all logs will be sent as SpanEvents.
      * (need for Jaeger. because they don't support the OpenTelemetry Log concept)
@@ -39,6 +43,31 @@ class Tracer                        implements TracerInterface
         $this->selfTrace            = new Trace($this->systemResource);
     }
     
+    /**
+     * PSR-3 log adapter method.
+     * Translates PSR-3 log messages into OpenTelemetry log.
+     *
+     * @param                    $level
+     * @param \Stringable|string $message
+     * @param array<string,scalar|scalar[]> $context
+     *
+     * @return void
+     */
+    public function log($level, \Stringable|string $message, array $context = []): void
+    {
+        $this->registerLog($this->selfInstrumentationScope, $level, $message, $context);
+    }
+    
+    #[\Override]
+    public function addEvent(string $name, iterable $attributes = [], int $timestamp = null): void
+    {
+        $this->telemetryContextResolver
+            ->resolveTelemetryContext()
+            ->getCurrentTrace()
+            ?->getCurrentSpan()
+            ?->addEvent($name, $attributes, $timestamp);
+    }
+    
     public function getResource(): ResourceInterface
     {
         return $this->systemResource;
@@ -64,7 +93,7 @@ class Tracer                        implements TracerInterface
     public function registerLog(InstrumentationScopeInterface    $instrumentationScope,
                                 string                           $level,
                                 float|array|bool|int|string|null $body,
-                                array                            $attributes = []
+                                iterable                         $attributes = []
     ): void
     {
         // ALGORITHM:
@@ -151,7 +180,7 @@ class Tracer                        implements TracerInterface
         $this->logs[$instrumentationScopeId][] = $logRecord;
     }
     
-    public function registerException(\Throwable $throwable, array $attributes = []): void
+    public function recordException(\Throwable $throwable, iterable $attributes = []): void
     {
         $trace                      = $this->telemetryContextResolver->resolveTelemetryContext()->getCurrentTrace();
         

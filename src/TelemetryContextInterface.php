@@ -9,6 +9,8 @@ interface TelemetryContextInterface
     
     public function getSpanId(): string|null;
     
+    public function getCurrentTrace(): ?TraceInterface;
+    
     public function getTraceFlags(): TraceFlagsEnum;
     
     public function end(): void;
