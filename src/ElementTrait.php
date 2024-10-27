@@ -7,6 +7,7 @@ namespace IfCastle\OpenTelemetry;
 trait ElementTrait
 {
     protected string $name          = '';
+
     protected string $schemaUrl     = '';
 
     public function getName(): string

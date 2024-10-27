@@ -19,11 +19,13 @@ class State extends MeterAbstract implements StateInterface
         parent::__construct($storage, $instrumentationScope, $name, $unit, $description, $attributes);
     }
 
+    #[\Override]
     public function setStateOk(string $message = ''): void
     {
         $this->add(0);
     }
 
+    #[\Override]
     public function setStateError(string $message = ''): void
     {
         $this->add(1);

@@ -15,6 +15,7 @@ class Tracer implements TracerInterface
      * (need for Jaeger. because they don't support the OpenTelemetry Log concept).
      */
     protected bool $populateLogsAsSpanEvents = false;
+
     /**
      * Log structure by OpenTelemetry standard:
      * *-- ResourceLogs
@@ -26,9 +27,13 @@ class Tracer implements TracerInterface
      * @var array <int, array<int, LogRecord>>
      */
     protected array $logs           = [];
+
     protected array $spans          = [];
+
     protected array $instrumentationScopes = [];
+
     protected InstrumentationScopeInterface $selfInstrumentationScope;
+
     protected Trace $selfTrace;
 
     public function __construct(
@@ -49,6 +54,7 @@ class Tracer implements TracerInterface
      * @param array<string,scalar|scalar[]> $context
      *
      */
+    #[\Override]
     public function log($level, \Stringable|string $message, array $context = []): void
     {
         $this->registerLog($this->selfInstrumentationScope, $level, $message, $context);
@@ -64,21 +70,25 @@ class Tracer implements TracerInterface
             ?->addEvent($name, $attributes, $timestamp);
     }
 
+    #[\Override]
     public function getResource(): ResourceInterface
     {
         return $this->systemResource;
     }
 
+    #[\Override]
     public function newTelemetryContext(): TelemetryContextInterface
     {
         return $this->telemetryContextResolver->newTelemetryContext();
     }
 
+    #[\Override]
     public function createTrace(): TraceInterface
     {
         return new Trace($this->systemResource);
     }
 
+    #[\Override]
     public function endTrace(TraceInterface $trace): void
     {
         $this->instrumentationScopes    = \array_merge($this->instrumentationScopes, $trace->getInstrumentationScopes());
@@ -86,6 +96,7 @@ class Tracer implements TracerInterface
         $this->telemetryFlushStrategy?->flushTrace($trace);
     }
 
+    #[\Override]
     public function registerLog(InstrumentationScopeInterface    $instrumentationScope,
         string                           $level,
         float|array|bool|int|string|null $body,
@@ -175,6 +186,7 @@ class Tracer implements TracerInterface
         $this->logs[$instrumentationScopeId][] = $logRecord;
     }
 
+    #[\Override]
     public function recordException(\Throwable $throwable, iterable $attributes = []): void
     {
         $trace                      = $this->telemetryContextResolver->resolveTelemetryContext()->getCurrentTrace();
@@ -186,6 +198,7 @@ class Tracer implements TracerInterface
         $trace->getCurrentSpan()?->recordException($throwable, $attributes);
     }
 
+    #[\Override]
     public function createSpan(
         string                        $spanName,
         SpanKindEnum                  $spanKind,
@@ -196,11 +209,13 @@ class Tracer implements TracerInterface
         return $trace->createSpan($spanName, $spanKind, $instrumentationScope, $attributes);
     }
 
+    #[\Override]
     public function endSpan(?SpanInterface $span = null): void
     {
         $this->telemetryContextResolver->resolveTelemetryContext()->getCurrentTrace()?->endSpan($span);
     }
 
+    #[\Override]
     public function cleanTelemetry(): void
     {
         $this->logs                 = [];

@@ -7,6 +7,7 @@ namespace IfCastle\OpenTelemetry;
 class SystemResourceBuilder
 {
     protected string $apiName       = '';
+
     protected string $apiVersion    = '';
 
     public function build(): ResourceInterface

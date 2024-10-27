@@ -16,18 +16,27 @@ namespace IfCastle\OpenTelemetry;
  * @see https://www.w3.org/TR/trace-context/#tracestate-header
  * @see https://github.com/open-telemetry/opentelemetry-specification/blob/master/specification/trace/api.md#tracestate
  */
-class TraceState implements AttributesInterface
+class TraceState implements AttributesInterface, \Stringable
 {
     use AttributesTrait;
-    public const int MAX_LIST_MEMBERS             = 32; //@see https://www.w3.org/TR/trace-context/#tracestate-header-field-values
-    public const int MAX_COMBINED_LENGTH          = 512; //@see https://www.w3.org/TR/trace-context/#tracestate-limits
+    public const int MAX_LIST_MEMBERS             = 32;
+     //@see https://www.w3.org/TR/trace-context/#tracestate-header-field-values
+    public const int MAX_COMBINED_LENGTH          = 512;
+     //@see https://www.w3.org/TR/trace-context/#tracestate-limits
     public const string LIST_MEMBERS_SEPARATOR         = ',';
+
     public const string LIST_MEMBER_KEY_VALUE_SPLITTER = '=';
+
     private const string VALID_KEY_CHAR_RANGE = '[_0-9a-z-*\/]';
+
     private const string VALID_KEY        = '[a-z]' . self::VALID_KEY_CHAR_RANGE . '{0,255}';
+
     private const string VALID_VENDOR_KEY = '[a-z0-9]' . self::VALID_KEY_CHAR_RANGE . '{0,240}@[a-z]' . self::VALID_KEY_CHAR_RANGE . '{0,13}';
+
     private const string VALID_KEY_REGEX          = '/^(?:' . self::VALID_KEY . '|' . self::VALID_VENDOR_KEY . ')$/';
+
     private const string VALID_VALUE_BASE_REGEX          = '/^[ -~]{0,255}[!-~]$/';
+
     private const string INVALID_VALUE_COMMA_EQUAL_REGEX = '/,|=/';
 
     public function __construct(?string $rawTraceState = null)
@@ -39,6 +48,7 @@ class TraceState implements AttributesInterface
         $this->attributes           = $this->parse($rawTraceState);
     }
 
+    #[\Override]
     public function setAttributes(array $attributes): static
     {
         $this->validateKeyValues($attributes);
@@ -48,6 +58,7 @@ class TraceState implements AttributesInterface
         return $this;
     }
 
+    #[\Override]
     public function addAttributes(array $attributes): static
     {
         $this->validateKeyValues($attributes);
@@ -71,11 +82,13 @@ class TraceState implements AttributesInterface
         }
     }
 
+    #[\Override]
     public function __toString(): string
     {
         if ($this->attributes === []) {
             return '';
         }
+
         $traceStateString = '';
         foreach (\array_reverse($this->attributes) as $k => $v) {
             $traceStateString .= $k . self::LIST_MEMBER_KEY_VALUE_SPLITTER . $v . self::LIST_MEMBERS_SEPARATOR;
@@ -126,6 +139,7 @@ class TraceState implements AttributesInterface
 
                 return [];
             }
+
             $parsedTraceState[$vendor[0]] = $vendor[1];
         }
 

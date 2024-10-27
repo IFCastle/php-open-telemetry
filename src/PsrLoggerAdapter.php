@@ -15,6 +15,7 @@ final readonly class PsrLoggerAdapter implements TelemetryLoggerInterface
     public function __construct(private LoggerInterface $logger) {}
 
 
+    #[\Override]
     public function log($level, \Stringable|string $message, array $context = []): void
     {
         $this->logger->log($level, $message, $context);

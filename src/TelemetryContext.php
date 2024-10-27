@@ -7,6 +7,7 @@ namespace IfCastle\OpenTelemetry;
 final class TelemetryContext implements TelemetryContextInterface
 {
     protected ?TraceInterface $trace        = null;
+
     protected ?\WeakReference $tracer       = null;
 
     public function __construct(TracerInterface $tracer)
@@ -15,26 +16,31 @@ final class TelemetryContext implements TelemetryContextInterface
         $this->trace                        = $tracer->createTrace();
     }
 
+    #[\Override]
     public function getCurrentTrace(): ?TraceInterface
     {
         return $this->trace;
     }
 
+    #[\Override]
     public function getTraceId(): ?string
     {
         return $this->trace?->getTraceId();
     }
 
+    #[\Override]
     public function getSpanId(): ?string
     {
         return $this->trace?->getCurrentSpanId();
     }
 
+    #[\Override]
     public function getTraceFlags(): TraceFlagsEnum
     {
         return TraceFlagsEnum::SAMPLED;
     }
 
+    #[\Override]
     public function end(): void
     {
         $this->trace?->end();

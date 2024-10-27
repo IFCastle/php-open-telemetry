@@ -14,25 +14,31 @@ class Span implements SpanInterface
     use LoggerTrait;
 
     protected ?\WeakReference $trace = null;
+
     protected SpanKindEnum $kind     = SpanKindEnum::INTERNAL;
+
     protected int $startTime         = 0;
+
     protected int $endTime           = 0;
-    protected ?InstrumentationScopeInterface $instrumentationScope = null;
     protected StatusCodeEnum $status = StatusCodeEnum::STATUS_UNSET;
+
     protected string $statusDescription = '';
+
     protected bool   $hasEnded        = false;
+
     protected array  $events          = [];
+
     protected array $links           = [];
+
     protected TraceState $traceState;
-    protected ExceptionFormatterInterface|null $exceptionFormatter = null;
 
     public function __construct(
         TraceInterface $trace,
         string $name,
         ?SpanKindEnum $kind          = null,
         array $attributes           = [],
-        ?InstrumentationScopeInterface $instrumentationScope = null,
-        ?ExceptionFormatterInterface $exceptionFormatter = null
+        protected ?InstrumentationScopeInterface $instrumentationScope = null,
+        protected ExceptionFormatterInterface $exceptionFormatter = new ExceptionFormatter()
     ) {
         $this->trace                = \WeakReference::create($trace);
         $this->traceId              = $trace->getTraceId();
@@ -40,8 +46,6 @@ class Span implements SpanInterface
         $this->name                 = $name;
         $this->kind                 = $kind ?? SpanKindEnum::INTERNAL;
         $this->attributes           = $attributes;
-        $this->instrumentationScope = $instrumentationScope;
-        $this->exceptionFormatter   = $exceptionFormatter ?? new ExceptionFormatter();
         $this->traceState           = new TraceState();
 
         $this->startTime            = SystemClock::now();
@@ -54,6 +58,7 @@ class Span implements SpanInterface
      * @param array<string,scalar|scalar[]> $context
      *
      */
+    #[\Override]
     public function log($level, \Stringable|string $message, array $context = []): void
     {
         if ($context['exception'] instanceof \Throwable) {
@@ -73,61 +78,73 @@ class Span implements SpanInterface
         return $this->trace?->get();
     }
 
+    #[\Override]
     public function getParentSpanId(): ?string
     {
         return $this->getTrace()?->getParentSpan()?->getSpanId();
     }
 
+    #[\Override]
     public function getTraceFlags(): TraceFlagsEnum
     {
         return TraceFlagsEnum::DEFAULT;
     }
 
+    #[\Override]
     public function getSpanName(): string
     {
         return $this->name;
     }
 
+    #[\Override]
     public function getSpanKind(): SpanKindEnum
     {
         return $this->kind;
     }
 
+    #[\Override]
     public function getStartTime(): int
     {
         return $this->startTime;
     }
 
+    #[\Override]
     public function getTimeUnixNano(): int
     {
         return $this->startTime;
     }
 
+    #[\Override]
     public function getEndTime(): int
     {
         return $this->endTime;
     }
 
+    #[\Override]
     public function getDuration(): int
     {
         return (int) \ceil($this->getDurationNanos() / 1000000000);
     }
 
+    #[\Override]
     public function getDurationNanos(): int
     {
         return $this->endTime - $this->startTime;
     }
 
+    #[\Override]
     public function getTraceState(): TraceState
     {
         return $this->traceState;
     }
 
+    #[\Override]
     public function getEvents(): array
     {
         return $this->events;
     }
 
+    #[\Override]
     public function addEvent(string $name, iterable $attributes = [], ?int $timestamp = null): void
     {
         if ($this->hasEnded) {
@@ -137,6 +154,7 @@ class Span implements SpanInterface
         $this->events[]             = new Event($name, $attributes, $timestamp);
     }
 
+    #[\Override]
     public function recordException(\Throwable $throwable, iterable $attributes = []): void
     {
         if ($this->hasEnded) {
@@ -149,22 +167,25 @@ class Span implements SpanInterface
         $attributes                 = \iterator_to_array($attributes);
 
         if ($attributes === []) {
-            $attributes             = ExceptionFormatter::buildAttributes($throwable);
+            $attributes             = (new ExceptionFormatter())->buildAttributes($throwable);
         }
 
         $this->events[]             = new Event('exception', $attributes, SystemClock::now());
     }
 
+    #[\Override]
     public function getStatus(): StatusCodeEnum
     {
         return $this->status;
     }
 
+    #[\Override]
     public function getStatusDescription(): string
     {
         return $this->statusDescription;
     }
 
+    #[\Override]
     public function setStatus(StatusCodeEnum $status, string $description = ''): static
     {
         if ($this->hasEnded) {
@@ -176,16 +197,19 @@ class Span implements SpanInterface
         return $this;
     }
 
+    #[\Override]
     public function isRecording(): bool
     {
         return false === $this->hasEnded;
     }
 
+    #[\Override]
     public function hasEnded(): bool
     {
         return $this->hasEnded;
     }
 
+    #[\Override]
     public function end(?int $endEpochNanos = null): void
     {
         if ($this->hasEnded) {
@@ -200,11 +224,13 @@ class Span implements SpanInterface
         }
     }
 
+    #[\Override]
     public function getLinks(): array
     {
         return $this->links;
     }
 
+    #[\Override]
     public function addLink(LinkInterface $link): static
     {
         if ($this->hasEnded) {
@@ -216,6 +242,7 @@ class Span implements SpanInterface
         return $this;
     }
 
+    #[\Override]
     public function getInstrumentationScope(): ?InstrumentationScopeInterface
     {
         return $this->instrumentationScope;

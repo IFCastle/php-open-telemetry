@@ -25,11 +25,13 @@ abstract class MeterAbstract implements MeterInterface
         $this->attributes           = $attributes;
     }
 
+    #[\Override]
     public function getMeterId(): string
     {
         return 'm' . \spl_object_id($this);
     }
 
+    #[\Override]
     public function add(mixed $value, array $attributes = []): void
     {
         $this->storage->record($this, $value, $attributes);

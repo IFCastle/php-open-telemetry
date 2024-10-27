@@ -7,7 +7,9 @@ namespace IfCastle\OpenTelemetry;
 class Trace implements TraceInterface
 {
     protected static int    $counter = 0;
+
     protected static string $prefix  = '';
+
     protected static ?InstrumentationScope $nopeInstrumentationScope = null;
 
     public static function reset(): void
@@ -31,13 +33,17 @@ class Trace implements TraceInterface
     }
 
     protected bool $isExternal      = false;
+
     protected int $spanIdCounter    = 0;
+
     protected string $spanPrefix    = '';
 
     protected string $traceId;
 
     protected array $spanStack      = [];
+
     protected array $spanMap        = [];
+
     protected array $instrumentationScopeMap = [];
 
     public function __construct(protected ResourceInterface $resource, ?string $traceId = null)
@@ -59,6 +65,7 @@ class Trace implements TraceInterface
         }
     }
 
+    #[\Override]
     public function newSpanId(): string
     {
         $id                         = \dechex(++$this->spanIdCounter);
@@ -72,30 +79,35 @@ class Trace implements TraceInterface
         return \str_pad($id, 16, '0', STR_PAD_LEFT);
     }
 
+    #[\Override]
     public function getTraceId(): string
     {
         return $this->traceId;
     }
 
+    #[\Override]
     public function isExternal(): bool
     {
         return $this->isExternal;
     }
 
+    #[\Override]
     public function getCurrentSpanId(): ?string
     {
         return $this->getCurrentSpan()?->getSpanId();
     }
 
+    #[\Override]
     public function getCurrentSpan(): ?SpanInterface
     {
-        if (\count($this->spanStack) === 0) {
+        if ($this->spanStack === []) {
             return null;
         }
 
         return $this->spanStack[\count($this->spanStack) - 1];
     }
 
+    #[\Override]
     public function getParentSpan(): ?SpanInterface
     {
         if (\count($this->spanStack) < 2) {
@@ -105,11 +117,13 @@ class Trace implements TraceInterface
         return $this->spanStack[\count($this->spanStack) - 2];
     }
 
+    #[\Override]
     public function getResource(): ResourceInterface
     {
         return $this->resource;
     }
 
+    #[\Override]
     public function setResource(ResourceInterface $resource): static
     {
         $this->resource             = $resource;
@@ -117,6 +131,7 @@ class Trace implements TraceInterface
         return $this;
     }
 
+    #[\Override]
     public function findInstrumentationScopeId(InstrumentationScopeInterface $instrumentationScope): string
     {
         $instrumentationScopeId     = (string) \spl_object_id($instrumentationScope);
@@ -142,6 +157,7 @@ class Trace implements TraceInterface
         return $instrumentationScopeId;
     }
 
+    #[\Override]
     public function createSpan(string $spanName, SpanKindEnum $spanKind, ?InstrumentationScopeInterface $instrumentationScope = null, array $attributes = []): SpanInterface
     {
         $span                       = new Span($this, $spanName, $spanKind, $attributes);
@@ -163,9 +179,10 @@ class Trace implements TraceInterface
         return $span;
     }
 
+    #[\Override]
     public function endSpan(?SpanInterface $span = null): void
     {
-        if (\count($this->spanStack) === 0) {
+        if ($this->spanStack === []) {
             $span->recordException(new \Error('Span stack is empty'));
             return;
         }
@@ -184,22 +201,25 @@ class Trace implements TraceInterface
         $span->end();
     }
 
+    #[\Override]
     public function getInstrumentationScopes(): array
     {
         return $this->instrumentationScopeMap;
     }
 
+    #[\Override]
     public function getSpansByInstrumentationScope(): array
     {
         return $this->spanMap;
     }
 
+    #[\Override]
     public function end(): void
     {
         $errors                     = [];
 
         try {
-            while (\count($this->spanStack) > 0) {
+            while ($this->spanStack !== []) {
                 $this->endSpan($this->spanStack[\count($this->spanStack) - 1]);
             }
         } catch (\Throwable $throwable) {
@@ -207,6 +227,7 @@ class Trace implements TraceInterface
         }
     }
 
+    #[\Override]
     public function cleanSpans(): void
     {
         $this->spanStack            = [];

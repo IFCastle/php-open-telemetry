@@ -9,6 +9,8 @@ use IfCastle\OpenTelemetry\Metrics\MeterStorageInterface;
 
 class NopeStorage implements MeterStorageInterface
 {
+    #[\Override]
     public function record(MeterInterface $meter, mixed $value, array $attributes = []): void {}
+
     public function reset(MeterInterface $meter): void {}
 }

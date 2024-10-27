@@ -46,7 +46,7 @@ trait AttributesTrait
 
     public function findByPrefix(string $prefix): array
     {
-        $prefix                     = $prefix . '.';
+        $prefix .= '.';
 
         $result                     = [];
 
@@ -61,7 +61,7 @@ trait AttributesTrait
 
     public function findByPrefixFirst(string $prefix): ?string
     {
-        $prefix                     = $prefix . '.';
+        $prefix .= '.';
 
         foreach ($this->attributes as $key => $value) {
             if (\str_starts_with($key, $prefix)) {

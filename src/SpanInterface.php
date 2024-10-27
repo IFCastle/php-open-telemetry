@@ -14,22 +14,40 @@ interface SpanInterface extends SpanElementInterface,
     TimestampInterface
 {
     public function getParentSpanId(): ?string;
+
     public function getTraceFlags(): TraceFlagsEnum;
+
     public function getSpanName(): string;
+
     public function getSpanKind(): SpanKindEnum;
+
     public function getStartTime(): int;
+
     public function getEndTime(): int;
+
     public function getDuration(): int;
+
     public function getDurationNanos(): int;
+
     public function getTraceState(): TraceState;
+
     public function getEvents(): array;
+
     public function getStatus(): StatusCodeEnum;
+
     public function getStatusDescription(): string;
+
     public function setStatus(StatusCodeEnum $status, string $description = ''): static;
+
     public function isRecording(): bool;
+
     public function hasEnded(): bool;
+
     public function end(?int $endEpochNanos = null): void;
+
     public function getLinks(): array;
+
     public function addLink(LinkInterface $link): static;
+
     public function getInstrumentationScope(): ?InstrumentationScopeInterface;
 }

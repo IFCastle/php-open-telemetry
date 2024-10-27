@@ -7,6 +7,7 @@ namespace IfCastle\OpenTelemetry;
 trait SpanElementTrait
 {
     protected string $traceId       = '';
+
     protected string $spanId        = '';
 
     public function getTraceId(): string

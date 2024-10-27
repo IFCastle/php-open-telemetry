@@ -10,7 +10,7 @@ final class ExceptionFormatter
     {
         // See https://opentelemetry.io/docs/specs/semconv/attributes-registry/exception/
         $attributes['exception.message']        = $throwable->getMessage();
-        $attributes['exception.type']           = \get_class($throwable);
+        $attributes['exception.type']           = $throwable::class;
 
         $seen                       = [];
         $trace                      = [];
@@ -22,8 +22,8 @@ final class ExceptionFormatter
                 break;
             }
 
-            if (\count($seen) > 0) {
-                $trace[]            = '[CAUSED BY] ' . $throwable->getFile() . '(' . $throwable->getLine() . '): ' . \get_class($throwable) . '::' . $throwable->getMessage();
+            if ($seen !== []) {
+                $trace[]            = '[CAUSED BY] ' . $throwable->getFile() . '(' . $throwable->getLine() . '): ' . $throwable::class . '::' . $throwable->getMessage();
             }
 
             $seen[\spl_object_id($throwable)] = $throwable;
@@ -33,13 +33,10 @@ final class ExceptionFormatter
             // remove all arguments from trace
             foreach ($throwable->getTrace() as $item) {
 
-                if (empty($item['file']) || empty($item['line'])) {
-
-                    if ($isFirst) {
-                        $isFirst        = false;
-                        $item['file']   = $throwable->getFile();
-                        $item['line']   = $throwable->getLine();
-                    }
+                if ((empty($item['file']) || empty($item['line'])) && $isFirst) {
+                    $isFirst        = false;
+                    $item['file']   = $throwable->getFile();
+                    $item['line']   = $throwable->getLine();
                 }
 
                 // Trace format
@@ -76,7 +73,7 @@ final class ExceptionFormatter
                 }
             }
 
-        } while ($throwable = $throwable->getPrevious());
+        } while (($throwable = $throwable->getPrevious()) instanceof \Throwable);
 
         $attributes['exception.stacktrace']     = \implode("\n", $trace);
 

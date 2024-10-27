@@ -17,13 +17,14 @@ use IfCastle\OpenTelemetry\Metrics\UpDownCounter;
 
 class NopeProvider implements MeterProviderInterface
 {
-    private MeterStorageInterface $storage;
+    private readonly MeterStorageInterface $storage;
 
     public function __construct()
     {
         $this->storage              = new NopeStorage();
     }
 
+    #[\Override]
     public function registerCounter(
         InstrumentationScopeInterface $instrumentationScope,
         string                        $name,
@@ -35,6 +36,7 @@ class NopeProvider implements MeterProviderInterface
         return new Counter($this->storage, $instrumentationScope, $name, $unit, $description, $attributes);
     }
 
+    #[\Override]
     public function registerUpDownCounter(
         InstrumentationScopeInterface $instrumentationScope,
         string                        $name,
@@ -46,6 +48,7 @@ class NopeProvider implements MeterProviderInterface
         return new UpDownCounter($this->storage, $instrumentationScope, $name, $unit, $description, $attributes);
     }
 
+    #[\Override]
     public function registerGauge(
         InstrumentationScopeInterface $instrumentationScope,
         string                        $name,
@@ -57,6 +60,7 @@ class NopeProvider implements MeterProviderInterface
         return new Counter($this->storage, $instrumentationScope, $name, $unit, $description, $attributes);
     }
 
+    #[\Override]
     public function registerHistogram(
         InstrumentationScopeInterface $instrumentationScope,
         string                        $name,
@@ -68,6 +72,7 @@ class NopeProvider implements MeterProviderInterface
         return new Histogram($this->storage, $instrumentationScope, $name, $unit, $description, $attributes);
     }
 
+    #[\Override]
     public function registerSummary(
         InstrumentationScopeInterface $instrumentationScope,
         string                        $name,
@@ -79,6 +84,7 @@ class NopeProvider implements MeterProviderInterface
         return new Summary($this->storage, $instrumentationScope, $name, $unit, $description, $attributes);
     }
 
+    #[\Override]
     public function registerState(
         InstrumentationScopeInterface $instrumentationScope,
         string                        $name,
