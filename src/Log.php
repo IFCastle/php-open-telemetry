@@ -14,6 +14,15 @@ use Psr\Log\LogLevel;
  */
 readonly class Log
 {
+    /**
+     * @param int $timeUnixNano
+     * @param string $level
+     * @param float|array<scalar|null>|bool|int|string|null $body
+     * @param array<string, scalar|null> $attributes
+     * @param string|null $traceId
+     * @param string|null $spanId
+     * @param TraceFlagsEnum|null $flags
+     */
     public function __construct(
         /**
          * $timeUnixNano is the time when the event occurred.

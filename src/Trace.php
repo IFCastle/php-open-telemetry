@@ -40,10 +40,19 @@ class Trace implements TraceInterface
 
     protected string $traceId;
 
+    /**
+     * @var SpanInterface[]
+     */
     protected array $spanStack      = [];
 
+    /**
+     * @var array<string, SpanInterface[]>
+     */
     protected array $spanMap        = [];
 
+    /**
+     * @var array<string, InstrumentationScopeInterface>
+     */
     protected array $instrumentationScopeMap = [];
 
     public function __construct(protected ResourceInterface $resource, ?string $traceId = null)
@@ -136,7 +145,7 @@ class Trace implements TraceInterface
     {
         $instrumentationScopeId     = (string) \spl_object_id($instrumentationScope);
 
-        if (isset($this->instrumentationScopeMap[$instrumentationScopeId])) {
+        if (\array_key_exists($instrumentationScopeId, $this->instrumentationScopeMap)) {
             return $instrumentationScopeId;
         }
 
@@ -158,8 +167,11 @@ class Trace implements TraceInterface
     }
 
     #[\Override]
-    public function createSpan(string $spanName, SpanKindEnum $spanKind, ?InstrumentationScopeInterface $instrumentationScope = null, array $attributes = []): SpanInterface
-    {
+    public function createSpan(string                         $spanName,
+        SpanKindEnum                   $spanKind,
+        ?InstrumentationScopeInterface $instrumentationScope = null,
+        iterable                       $attributes = []
+    ): SpanInterface {
         $span                       = new Span($this, $spanName, $spanKind, $attributes);
 
         $this->spanStack[]          = $span;

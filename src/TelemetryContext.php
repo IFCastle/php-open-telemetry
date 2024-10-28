@@ -8,6 +8,9 @@ final class TelemetryContext implements TelemetryContextInterface
 {
     protected ?TraceInterface $trace        = null;
 
+    /**
+     * @var \WeakReference<TracerInterface>|null
+     */
     protected ?\WeakReference $tracer       = null;
 
     public function __construct(TracerInterface $tracer)

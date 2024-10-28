@@ -24,17 +24,31 @@ interface TraceInterface
 
     public function findInstrumentationScopeId(InstrumentationScopeInterface $instrumentationScope): string;
 
+    /**
+     * @param string $spanName
+     * @param SpanKindEnum $spanKind
+     * @param InstrumentationScopeInterface|null $instrumentationScope
+     * @param iterable<string, scalar|null> $attributes
+     *
+     * @return SpanInterface
+     */
     public function createSpan(
         string                        $spanName,
         SpanKindEnum                  $spanKind,
         ?InstrumentationScopeInterface $instrumentationScope = null,
-        array                         $attributes = []
+        iterable                      $attributes = []
     ): SpanInterface;
 
     public function endSpan(?SpanInterface $span = null): void;
 
+    /**
+     * @return array<string, InstrumentationScopeInterface>
+     */
     public function getInstrumentationScopes(): array;
 
+    /**
+     * @return array<string, SpanInterface[]>
+     */
     public function getSpansByInstrumentationScope(): array;
 
     public function end(): void;

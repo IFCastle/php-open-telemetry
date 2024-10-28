@@ -20,9 +20,9 @@ class TraceState implements AttributesInterface, \Stringable
 {
     use AttributesTrait;
     public const int MAX_LIST_MEMBERS             = 32;
-     //@see https://www.w3.org/TR/trace-context/#tracestate-header-field-values
+    //@see https://www.w3.org/TR/trace-context/#tracestate-header-field-values
     public const int MAX_COMBINED_LENGTH          = 512;
-     //@see https://www.w3.org/TR/trace-context/#tracestate-limits
+    //@see https://www.w3.org/TR/trace-context/#tracestate-limits
     public const string LIST_MEMBERS_SEPARATOR         = ',';
 
     public const string LIST_MEMBER_KEY_VALUE_SPLITTER = '=';
@@ -33,11 +33,11 @@ class TraceState implements AttributesInterface, \Stringable
 
     private const string VALID_VENDOR_KEY = '[a-z0-9]' . self::VALID_KEY_CHAR_RANGE . '{0,240}@[a-z]' . self::VALID_KEY_CHAR_RANGE . '{0,13}';
 
-    private const string VALID_KEY_REGEX          = '/^(?:' . self::VALID_KEY . '|' . self::VALID_VENDOR_KEY . ')$/';
+    private const string VALID_KEY_REGEX  = '/^(?:' . self::VALID_KEY . '|' . self::VALID_VENDOR_KEY . ')$/';
 
-    private const string VALID_VALUE_BASE_REGEX          = '/^[ -~]{0,255}[!-~]$/';
+    private const string VALID_VALUE_BASE_REGEX = '/^[ -~]{0,255}[!-~]$/';
 
-    private const string INVALID_VALUE_COMMA_EQUAL_REGEX = '/,|=/';
+    private const string INVALID_VALUE_COMMA_EQUAL_REGEX = '/[,=]/';
 
     public function __construct(?string $rawTraceState = null)
     {
@@ -49,8 +49,12 @@ class TraceState implements AttributesInterface, \Stringable
     }
 
     #[\Override]
-    public function setAttributes(array $attributes): static
+    public function setAttributes(iterable $attributes): static
     {
+        if (!\is_array($attributes)) {
+            $attributes             = \iterator_to_array($attributes);
+        }
+
         $this->validateKeyValues($attributes);
 
         $this->attributes           = $attributes;
@@ -59,8 +63,12 @@ class TraceState implements AttributesInterface, \Stringable
     }
 
     #[\Override]
-    public function addAttributes(array $attributes): static
+    public function addAttributes(iterable $attributes): static
     {
+        if (!\is_array($attributes)) {
+            $attributes             = \iterator_to_array($attributes);
+        }
+
         $this->validateKeyValues($attributes);
 
         $this->attributes           = \array_merge($this->attributes, $attributes);
@@ -68,6 +76,10 @@ class TraceState implements AttributesInterface, \Stringable
         return $this;
     }
 
+    /**
+     * @param array<string, scalar|null> $attributes
+     *
+     */
     protected function validateKeyValues(array $attributes): void
     {
         foreach ($attributes as $key => $value) {
@@ -111,6 +123,7 @@ class TraceState implements AttributesInterface, \Stringable
      *
      *      $this->tracestate = ['vendor2' => 'value2' ,'vendor1' => 'value1']
      *
+     * @return array<string, scalar|null>
      */
     private function parse(string $rawTraceState): array
     {

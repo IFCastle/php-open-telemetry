@@ -83,6 +83,10 @@ class SystemResourceBuilder
         return new Resource('api', $attributes, 'https://opentelemetry.io/schemas/1.23.1');
     }
 
+    /**
+     * @param array<string, scalar|null> $attributes
+     * @return array<string, scalar|null>
+     */
     protected function buildCustomAttributes(array $attributes): array
     {
         return $attributes;

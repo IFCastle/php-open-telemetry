@@ -13,6 +13,9 @@ class Span implements SpanInterface
     use SpanElementTrait;
     use LoggerTrait;
 
+    /**
+     * @var \WeakReference<TraceInterface>|null
+     */
     protected ?\WeakReference $trace = null;
 
     protected SpanKindEnum $kind     = SpanKindEnum::INTERNAL;
@@ -26,12 +29,21 @@ class Span implements SpanInterface
 
     protected bool   $hasEnded        = false;
 
-    protected array  $events          = [];
+    /**
+     * @var array<Event>
+     */
+    protected array  $events         = [];
 
+    /**
+     * @var array<LinkInterface>
+     */
     protected array $links           = [];
 
     protected TraceState $traceState;
 
+    /**
+     * @param array<string, scalar|null>     $attributes
+     */
     public function __construct(
         TraceInterface $trace,
         string $name,
@@ -55,7 +67,7 @@ class Span implements SpanInterface
      * PSR-3 log adapter method.
      * Translates PSR-3 log messages into OpenTelemetry Span-events.
      *
-     * @param array<string,scalar|scalar[]> $context
+     * @param array<string,scalar|object|scalar[]> $context
      *
      */
     #[\Override]
@@ -167,7 +179,7 @@ class Span implements SpanInterface
         $attributes                 = \iterator_to_array($attributes);
 
         if ($attributes === []) {
-            $attributes             = (new ExceptionFormatter())->buildAttributes($throwable);
+            $attributes             = (new ExceptionFormatter())->buildExceptionAttributes($throwable);
         }
 
         $this->events[]             = new Event('exception', $attributes, SystemClock::now());

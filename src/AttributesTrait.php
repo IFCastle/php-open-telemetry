@@ -6,6 +6,9 @@ namespace IfCastle\OpenTelemetry;
 
 trait AttributesTrait
 {
+    /**
+     * @var array<string, scalar|null>
+     */
     protected array $attributes = [];
 
     public function setAttribute(string $key, string|bool|int|float|null $value): static
@@ -20,11 +23,19 @@ trait AttributesTrait
         return $this->attributes[$key] ?? null;
     }
 
+    /**
+     * @return array<string, scalar|null>
+     */
     public function getAttributes(): array
     {
         return $this->attributes;
     }
 
+    /**
+     * @param iterable<string, scalar|null> $attributes
+     *
+     * @return $this
+     */
     public function setAttributes(iterable $attributes): static
     {
         if (!\is_array($attributes)) {
@@ -36,6 +47,11 @@ trait AttributesTrait
         return $this;
     }
 
+    /**
+     * @param iterable<string, scalar|scalar[]> $attributes
+     *
+     * @return $this
+     */
     public function addAttributes(iterable $attributes): static
     {
         if (!\is_array($attributes)) {
@@ -52,6 +68,10 @@ trait AttributesTrait
         return isset($this->attributes[$key]);
     }
 
+    /**
+     *
+     * @return array<string, scalar|null>
+     */
     public function findByPrefix(string $prefix): array
     {
         $prefix .= '.';

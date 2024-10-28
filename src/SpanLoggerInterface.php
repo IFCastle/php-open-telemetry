@@ -8,7 +8,13 @@ interface SpanLoggerInterface
 {
     public function defineSpanKind(SpanKindEnum $spanKind): static;
 
-    public function startSpan(string $spanName, array $attributes = []): SpanInterface;
+    /**
+     * @param string $spanName
+     * @param iterable<string, scalar|null> $attributes
+     *
+     * @return SpanInterface
+     */
+    public function startSpan(string $spanName, iterable $attributes = []): SpanInterface;
 
     public function endSpan(?SpanInterface $span = null): void;
 }

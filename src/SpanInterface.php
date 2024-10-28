@@ -31,6 +31,9 @@ interface SpanInterface extends SpanElementInterface,
 
     public function getTraceState(): TraceState;
 
+    /**
+     * @return Event[]
+     */
     public function getEvents(): array;
 
     public function getStatus(): StatusCodeEnum;
@@ -45,6 +48,9 @@ interface SpanInterface extends SpanElementInterface,
 
     public function end(?int $endEpochNanos = null): void;
 
+    /**
+     * @return LinkInterface[]
+     */
     public function getLinks(): array;
 
     public function addLink(LinkInterface $link): static;

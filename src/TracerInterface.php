@@ -14,15 +14,29 @@ interface TracerInterface extends TelemetryLoggerInterface
 
     public function endTrace(TraceInterface $trace): void;
 
+    /**
+     * @param string $spanName
+     * @param SpanKindEnum $spanKind
+     * @param InstrumentationScopeInterface|null $instrumentationScope
+     * @param iterable<string, scalar|null> $attributes
+     *
+     * @return SpanInterface
+     */
     public function createSpan(
         string                        $spanName,
         SpanKindEnum                  $spanKind,
         ?InstrumentationScopeInterface $instrumentationScope = null,
-        array                         $attributes           = []
+        iterable                      $attributes           = []
     ): SpanInterface;
 
     public function endSpan(?SpanInterface $span = null): void;
 
+    /**
+     * @param InstrumentationScopeInterface $instrumentationScope
+     * @param string $level
+     * @param array<scalar>|string|bool|int|float|null $body
+     * @param iterable<string, scalar|null> $attributes
+     */
     public function registerLog(
         InstrumentationScopeInterface $instrumentationScope,
         string $level,

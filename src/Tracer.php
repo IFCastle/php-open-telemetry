@@ -17,23 +17,33 @@ class Tracer implements TracerInterface
     protected bool $populateLogsAsSpanEvents = false;
 
     /**
-     * Log structure by OpenTelemetry standard:
-     * *-- ResourceLogs
-     *    |------ InstrumentationLogs
-     *           |--------- LogRecords
+     * Logs grouped by InstrumentationScopes.
      *
-     * We use spl_object_id() as the key to the ResourceLogs array.
-     *
-     * @var array <int, array<int, LogRecord>>
+     * @var array <string, Log[]>
      */
     protected array $logs           = [];
 
+    /**
+     * Span grouped by InstrumentationScopes.
+     *
+     * @var array <string, SpanInterface[]>
+     */
     protected array $spans          = [];
 
+    /**
+     * InstrumentationScope.
+     * @var array <string, InstrumentationScopeInterface>
+     */
     protected array $instrumentationScopes = [];
 
+    /**
+     * Self instrumentation scope.
+     */
     protected InstrumentationScopeInterface $selfInstrumentationScope;
 
+    /**
+     * Self trace.
+     */
     protected Trace $selfTrace;
 
     public function __construct(
@@ -203,7 +213,7 @@ class Tracer implements TracerInterface
         string                        $spanName,
         SpanKindEnum                  $spanKind,
         ?InstrumentationScopeInterface $instrumentationScope = null,
-        array                         $attributes = []
+        iterable                      $attributes = []
     ): SpanInterface {
         $trace                      = $this->telemetryContextResolver->resolveTelemetryContext()->getCurrentTrace() ?? $this->defineTrace();
         return $trace->createSpan($spanName, $spanKind, $instrumentationScope, $attributes);

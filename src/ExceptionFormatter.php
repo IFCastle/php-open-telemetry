@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace IfCastle\OpenTelemetry;
 
-final class ExceptionFormatter
+final class ExceptionFormatter implements ExceptionFormatterInterface
 {
-    public function buildAttributes(\Throwable $throwable): array
+    /**
+     * @param \Throwable $throwable
+     * @return array<string, scalar|null>
+     */
+    public function buildExceptionAttributes(\Throwable $throwable): array
     {
         // See https://opentelemetry.io/docs/specs/semconv/attributes-registry/exception/
         $attributes['exception.message']        = $throwable->getMessage();
