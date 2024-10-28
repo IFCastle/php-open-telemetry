@@ -32,6 +32,8 @@ class Tracer implements TracerInterface
      */
     protected bool $copyLogsToPsrLogger = false;
 
+    private bool $isConfigured = false;
+
     /**
      * Logs grouped by InstrumentationScopes.
      *
@@ -82,6 +84,28 @@ class Tracer implements TracerInterface
                 $this->exceptionFormatter = new ExceptionFormatter();
             }
         }
+    }
+
+    /**
+     * Configure the Tracer before use.
+     * This method can be called only once.
+     */
+    public function configure(
+        ?bool $populateLogsAsSpanEvents = null,
+        ?bool $populateExceptionsToLog = null,
+        ?bool $populateExceptionsToSpan = null,
+        ?bool $copyLogsToPsrLogger = null
+    ): void {
+        if ($this->isConfigured) {
+            return;
+        }
+
+        $this->isConfigured                 = true;
+
+        $this->populateLogsAsSpanEvents     = $populateLogsAsSpanEvents ?? $this->populateLogsAsSpanEvents;
+        $this->populateExceptionsToLog      = $populateExceptionsToLog ?? $this->populateExceptionsToLog;
+        $this->populateExceptionsToSpan     = $populateExceptionsToSpan ?? $this->populateExceptionsToSpan;
+        $this->copyLogsToPsrLogger          = $copyLogsToPsrLogger ?? $this->copyLogsToPsrLogger;
     }
 
     /**
