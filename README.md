@@ -1,4 +1,4 @@
-# PHP OpenTelemetry library
+# PHP OpenTelemetry library [![PHP Composer](https://github.com/EdmondDantes/php-open-telemetry/actions/workflows/php.yml/badge.svg)](https://github.com/EdmondDantes/php-open-telemetry/actions/workflows/php.yml)
 
 An alternative version of the library for the `OpenTelemetry` standard on `PHP`.
 
