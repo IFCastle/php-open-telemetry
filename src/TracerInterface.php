@@ -34,7 +34,7 @@ interface TracerInterface extends TelemetryLoggerInterface
     /**
      * @param InstrumentationScopeInterface $instrumentationScope
      * @param string $level
-     * @param array<scalar>|string|bool|int|float|null $body
+     * @param array<scalar|object|scalar[]>|string|bool|int|float|null $body
      * @param iterable<string, scalar|null> $attributes
      */
     public function registerLog(
