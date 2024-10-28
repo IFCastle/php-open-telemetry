@@ -181,7 +181,7 @@ class Span implements SpanInterface
         }
 
         if ($attributes === []) {
-            $attributes             = $this->exceptionFormatter->buildExceptionAttributes($throwable);
+            $attributes             = $this->exceptionFormatter->buildExceptionAttributes($throwable, $attributes);
         }
 
         $this->events[]             = new Event('exception', $attributes, SystemClock::now());

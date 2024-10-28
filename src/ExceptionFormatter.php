@@ -4,14 +4,41 @@ declare(strict_types=1);
 
 namespace IfCastle\OpenTelemetry;
 
+use Psr\Log\LogLevel;
+
 final class ExceptionFormatter implements ExceptionFormatterInterface
 {
+    #[\Override]
+    public function getSeverityText(\Throwable $throwable): string
+    {
+        if ($throwable instanceof \ErrorException) {
+            return match ($throwable->getSeverity()) {
+                E_WARNING, E_CORE_WARNING, E_COMPILE_WARNING, E_USER_WARNING => LogLevel::WARNING,
+                E_PARSE, E_COMPILE_ERROR, E_CORE_ERROR                       => LogLevel::CRITICAL,
+                E_NOTICE, E_USER_NOTICE                                      => LogLevel::NOTICE,
+                E_STRICT, E_DEPRECATED, E_USER_DEPRECATED                    => LogLevel::DEBUG,
+                default                                                      => LogLevel::ERROR,
+            };
+        }
+
+        return LogLevel::ERROR;
+    }
+
+    #[\Override]
+    public function buildExceptionReport(\Throwable $throwable): array|string
+    {
+        return $throwable->getMessage();
+    }
+
     /**
-     * @param \Throwable $throwable
      * @return array<string, scalar|null>
      */
-    public function buildExceptionAttributes(\Throwable $throwable): array
+    public function buildExceptionAttributes(\Throwable $throwable, iterable $attributes = []): array
     {
+        if (!\is_array($attributes)) {
+            $attributes             = \iterator_to_array($attributes);
+        }
+
         // See https://opentelemetry.io/docs/specs/semconv/attributes-registry/exception/
         $attributes['exception.message']        = $throwable->getMessage();
         $attributes['exception.type']           = $throwable::class;

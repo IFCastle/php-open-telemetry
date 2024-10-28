@@ -16,6 +16,10 @@ class Tracer implements TracerInterface
      */
     protected bool $populateLogsAsSpanEvents = false;
 
+    protected bool $populateExceptionsToLog = false;
+
+    protected bool $populateExceptionsToSpan = false;
+
     /**
      * Logs grouped by InstrumentationScopes.
      *
@@ -209,6 +213,23 @@ class Tracer implements TracerInterface
     #[\Override]
     public function recordException(\Throwable $throwable, iterable $attributes = []): void
     {
+        if ($this->populateExceptionsToLog) {
+            $this->registerLog(
+                $this->selfInstrumentationScope,
+                $this->exceptionFormatter->getSeverityText($throwable),
+                $this->exceptionFormatter->buildExceptionReport($throwable),
+                $this->exceptionFormatter->buildExceptionAttributes($throwable, $attributes)
+            );
+
+            if ($this->populateLogsAsSpanEvents) {
+                return;
+            }
+        }
+
+        if (false === $this->populateExceptionsToSpan) {
+            return;
+        }
+
         $trace                      = $this->telemetryContextResolver->resolveTelemetryContext()->getCurrentTrace();
 
         if ($trace === null) {
