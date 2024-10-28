@@ -6,9 +6,20 @@ namespace IfCastle\OpenTelemetry;
 
 use Psr\Log\LogLevel;
 
+/**
+ * This model does not include the observed_time_unix_nano
+ * field because it is unnecessary in most cases.
+ *
+ * @see https://opentelemetry.io/docs/specs/otel/logs/data-model/
+ */
 readonly class Log
 {
     public function __construct(
+        /**
+         * $timeUnixNano is the time when the event occurred.
+         * Value is UNIX Epoch time in nanoseconds since 00:00:00 UTC on 1 January 1970.
+         * The Value of 0 indicates unknown or missing timestamp.
+         */
         public int                  $timeUnixNano,
         public string               $level,
         public float|array|bool|int|string|null $body,
