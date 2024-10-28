@@ -176,10 +176,12 @@ class Span implements SpanInterface
         // Automatically set status to ERROR
         $this->status               = StatusCodeEnum::STATUS_ERROR;
 
-        $attributes                 = \iterator_to_array($attributes);
+        if (!\is_array($attributes)) {
+            $attributes             = \iterator_to_array($attributes);
+        }
 
         if ($attributes === []) {
-            $attributes             = (new ExceptionFormatter())->buildExceptionAttributes($throwable);
+            $attributes             = $this->exceptionFormatter->buildExceptionAttributes($throwable);
         }
 
         $this->events[]             = new Event('exception', $attributes, SystemClock::now());

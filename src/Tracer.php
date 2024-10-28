@@ -49,12 +49,22 @@ class Tracer implements TracerInterface
     public function __construct(
         protected ResourceInterface $systemResource,
         protected TelemetryContextResolverInterface $telemetryContextResolver,
-        protected TelemetryFlushStrategyInterface|null $telemetryFlushStrategy = null
+        protected TelemetryFlushStrategyInterface|null $telemetryFlushStrategy = null,
+        protected ExceptionFormatterInterface|null $exceptionFormatter = null
     ) {
         // Create self instrumentation scope
         $this->selfInstrumentationScope = new InstrumentationScope('tracer');
         $this->instrumentationScopes['i' . \spl_object_id($this->selfInstrumentationScope)] = $this->selfInstrumentationScope;
         $this->selfTrace            = new Trace($this->systemResource);
+
+        if ($this->exceptionFormatter === null) {
+
+            if (\interface_exists('IfCastle\Exceptions\BaseExceptionInterface')) {
+                $this->exceptionFormatter = new BaseExceptionFormatter();
+            } else {
+                $this->exceptionFormatter = new ExceptionFormatter();
+            }
+        }
     }
 
     /**
@@ -95,7 +105,7 @@ class Tracer implements TracerInterface
     #[\Override]
     public function createTrace(): TraceInterface
     {
-        return new Trace($this->systemResource);
+        return new Trace($this->systemResource, null, $this->exceptionFormatter);
     }
 
     #[\Override]

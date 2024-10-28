@@ -55,12 +55,18 @@ class Trace implements TraceInterface
      */
     protected array $instrumentationScopeMap = [];
 
-    public function __construct(protected ResourceInterface $resource, ?string $traceId = null)
-    {
+    public function __construct(protected ResourceInterface $resource,
+        ?string   $traceId = null,
+        protected ExceptionFormatterInterface|null $exceptionFormatter = null
+    ) {
         $this->isExternal           = $traceId !== null;
 
         if (self::$nopeInstrumentationScope === null) {
             self::$nopeInstrumentationScope = new InstrumentationScope('nope');
+        }
+
+        if ($this->exceptionFormatter === null) {
+            $this->exceptionFormatter = new ExceptionFormatter();
         }
 
         $this->instrumentationScopeMap['i' . \spl_object_id(self::$nopeInstrumentationScope)] = self::$nopeInstrumentationScope;

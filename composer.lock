@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e78223a3e530a3d706d8fcbc9a3d67e2",
+    "content-hash": "f929a9dd301d639292cca9dc6a11ede8",
     "packages": [
         {
             "name": "psr/log",
@@ -599,6 +599,53 @@
                 "source": "https://github.com/EdmondDantes/ifcastle-codestyle/tree/v0.1.7"
             },
             "time": "2024-10-26T13:56:03+00:00"
+        },
+        {
+            "name": "ifcastle/exceptions",
+            "version": "v5.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/EdmondDantes/BaseException.git",
+                "reference": "ab673c63f415fd315d31d625197530e772107f55"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/EdmondDantes/BaseException/zipball/ab673c63f415fd315d31d625197530e772107f55",
+                "reference": "ab673c63f415fd315d31d625197530e772107f55",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.3"
+            },
+            "require-dev": {
+                "ifcastle/codestyle": "^0.1.7",
+                "monolog/monolog": "^3.7",
+                "phpstan/phpstan": "^1.12",
+                "phpunit/phpunit": "^11.2",
+                "rector/rector": "^1.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "IfCastle\\Exceptions\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Edmond Dantes",
+                    "email": "edmondifthen@proton.me"
+                }
+            ],
+            "description": "A basic library for exceptions with templates, oriented towards usage in web services",
+            "support": {
+                "issues": "https://github.com/EdmondDantes/BaseException/issues",
+                "source": "https://github.com/EdmondDantes/BaseException/tree/v5.1.0"
+            },
+            "time": "2024-10-27T15:01:43+00:00"
         },
         {
             "name": "phpstan/phpstan",
