@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace IfCastle\OpenTelemetry;
 
+use Psr\Log\LoggerInterface;
 use Psr\Log\LoggerTrait;
 
 class Tracer implements TracerInterface
@@ -16,9 +17,20 @@ class Tracer implements TracerInterface
      */
     protected bool $populateLogsAsSpanEvents = false;
 
+    /**
+     * If true, all exceptions will be sent as Log.
+     */
     protected bool $populateExceptionsToLog = false;
 
+    /**
+     * If true, all exceptions will be sent as Span.
+     */
     protected bool $populateExceptionsToSpan = false;
+
+    /**
+     * If true, all logs will be copied to PSR-3 logger.
+     */
+    protected bool $copyLogsToPsrLogger = false;
 
     /**
      * Logs grouped by InstrumentationScopes.
@@ -54,7 +66,8 @@ class Tracer implements TracerInterface
         protected ResourceInterface $systemResource,
         protected TelemetryContextResolverInterface $telemetryContextResolver,
         protected TelemetryFlushStrategyInterface|null $telemetryFlushStrategy = null,
-        protected ExceptionFormatterInterface|null $exceptionFormatter = null
+        protected ExceptionFormatterInterface|null $exceptionFormatter = null,
+        protected LoggerInterface|null $psrLogger = null
     ) {
         // Create self instrumentation scope
         $this->selfInstrumentationScope = new InstrumentationScope('tracer');
@@ -133,6 +146,25 @@ class Tracer implements TracerInterface
         // in the background and will not impact the execution of the request.
 
         $telemetryContext           = $this->telemetryContextResolver->resolveTelemetryContext();
+
+        if ($this->copyLogsToPsrLogger && $this->psrLogger !== null) {
+
+            $context                = $attributes;
+
+            if (\is_array($body)) {
+                $context            = \array_merge($body, $context);
+
+                if (\array_key_exists('exception', $context) && $context['exception'] instanceof \Throwable) {
+                    $body           = $context['exception']->getMessage();
+                } elseif (\array_key_exists('message', $context)) {
+                    $body           = (string) $context['message'];
+                } else {
+                    $body           = 'no text record';
+                }
+            }
+
+            $this->psrLogger->log($level, $body, $context);
+        }
 
         if ($this->populateLogsAsSpanEvents) {
             $span                   = $telemetryContext->getCurrentTrace()?->getCurrentSpan();
