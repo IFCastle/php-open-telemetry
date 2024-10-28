@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace IfCastle\Logger;
+namespace IfCastle\OpenTelemetry;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\LoggerTrait;
@@ -32,12 +32,12 @@ final readonly class PsrLoggerAdapter implements TelemetryLoggerInterface
         $this->logger->log(LogLevel::INFO, $name, $attributes);
     }
 
-    public function recordException(\Throwable $exception, iterable $attributes = []): void
+    public function recordException(\Throwable $throwable, iterable $attributes = []): void
     {
         $attributes                 = \iterator_to_array($attributes);
         // Put an exception object into the attribute array according to the PS3 specification.
-        $attributes['exception']    = $exception;
+        $attributes['exception']    = $throwable;
 
-        $this->logger->log(LogLevel::ERROR, $exception->getMessage(), $attributes);
+        $this->logger->log(LogLevel::ERROR, $throwable->getMessage(), $attributes);
     }
 }

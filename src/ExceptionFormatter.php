@@ -23,7 +23,11 @@ final class ExceptionFormatter
             }
 
             if ($seen !== []) {
-                $trace[]            = '[CAUSED BY] ' . $throwable->getFile() . '(' . $throwable->getLine() . '): ' . $throwable::class . '::' . $throwable->getMessage();
+                $trace[]            = '[CAUSED BY] '
+                                      . $throwable->getFile()
+                                      . '(' . $throwable->getLine() . '): '
+                                      . $throwable::class
+                                      . '::' . $throwable->getMessage();
             }
 
             $seen[\spl_object_id($throwable)] = $throwable;

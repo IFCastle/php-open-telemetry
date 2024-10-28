@@ -11,5 +11,9 @@ interface MeterInterface extends AttributesInterface, ElementInterface
 {
     public function getMeterId(): string;
 
-    public function add(mixed $value, array $attributes = []): void;
+    /**
+     * @param mixed $value
+     * @param iterable<string, scalar|scalar[]> $attributes
+     */
+    public function add(mixed $value, iterable $attributes = []): void;
 }

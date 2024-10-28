@@ -6,5 +6,10 @@ namespace IfCastle\OpenTelemetry\Metrics;
 
 interface MeterStorageInterface
 {
-    public function record(MeterInterface $meter, mixed $value, array $attributes = []): void;
+    /**
+     * @param MeterInterface $meter
+     * @param mixed          $value
+     * @param iterable<string, scalar|scalar[]> $attributes
+     */
+    public function record(MeterInterface $meter, mixed $value, iterable $attributes = []): void;
 }

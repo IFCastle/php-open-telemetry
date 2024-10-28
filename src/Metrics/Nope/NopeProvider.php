@@ -15,9 +15,9 @@ use IfCastle\OpenTelemetry\Metrics\StateInterface;
 use IfCastle\OpenTelemetry\Metrics\Summary;
 use IfCastle\OpenTelemetry\Metrics\UpDownCounter;
 
-class NopeProvider implements MeterProviderInterface
+final readonly class NopeProvider implements MeterProviderInterface
 {
-    private readonly MeterStorageInterface $storage;
+    private MeterStorageInterface $storage;
 
     public function __construct()
     {
@@ -30,7 +30,7 @@ class NopeProvider implements MeterProviderInterface
         string                        $name,
         ?string                       $unit = null,
         ?string                       $description = null,
-        array                         $attributes = [],
+        iterable                      $attributes = [],
         bool                          $isReset = false
     ): MeterInterface {
         return new Counter($this->storage, $instrumentationScope, $name, $unit, $description, $attributes);
@@ -42,7 +42,7 @@ class NopeProvider implements MeterProviderInterface
         string                        $name,
         ?string                       $unit = null,
         ?string                       $description = null,
-        array                         $attributes = [],
+        iterable                      $attributes = [],
         bool                          $isReset = false
     ): MeterInterface {
         return new UpDownCounter($this->storage, $instrumentationScope, $name, $unit, $description, $attributes);
@@ -54,7 +54,7 @@ class NopeProvider implements MeterProviderInterface
         string                        $name,
         ?string                       $unit = null,
         ?string                       $description = null,
-        array                         $attributes = [],
+        iterable                      $attributes = [],
         bool                          $isReset = false
     ): MeterInterface {
         return new Counter($this->storage, $instrumentationScope, $name, $unit, $description, $attributes);
@@ -66,7 +66,7 @@ class NopeProvider implements MeterProviderInterface
         string                        $name,
         ?string                       $unit = null,
         ?string                       $description = null,
-        array                         $attributes = [],
+        iterable                      $attributes = [],
         bool                          $isReset = false
     ): MeterInterface {
         return new Histogram($this->storage, $instrumentationScope, $name, $unit, $description, $attributes);
@@ -78,7 +78,7 @@ class NopeProvider implements MeterProviderInterface
         string                        $name,
         ?string                       $unit = null,
         ?string                       $description = null,
-        array                         $attributes = [],
+        iterable                      $attributes = [],
         bool                          $isReset = false
     ): MeterInterface {
         return new Summary($this->storage, $instrumentationScope, $name, $unit, $description, $attributes);
@@ -89,7 +89,7 @@ class NopeProvider implements MeterProviderInterface
         InstrumentationScopeInterface $instrumentationScope,
         string                        $name,
         ?string                       $description = null,
-        array                         $attributes = [],
+        iterable                      $attributes = [],
         bool                          $isReset = false
     ): StateInterface {
         return new State($this->storage, $instrumentationScope, $name, 'count', $description, $attributes);

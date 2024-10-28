@@ -10,10 +10,15 @@ class Link implements LinkInterface
     use AttributesTrait;
     use SpanElementTrait;
 
+    /**
+     * @param string $traceId
+     * @param string $spanId
+     * @param iterable<string, scalar|scalar[]> $attributes
+     */
     public function __construct(
         string $traceId,
         string $spanId,
-        array $attributes   = []
+        iterable $attributes   = []
     ) {
         $this->traceId      = $traceId;
         $this->spanId       = $spanId;

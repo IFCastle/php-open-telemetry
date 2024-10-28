@@ -13,13 +13,21 @@ abstract class MeterAbstract implements MeterInterface
     use ElementTrait;
     use AttributesTrait;
 
+    /**
+     * @param MeterStorageInterface $storage
+     * @param InstrumentationScopeInterface $instrumentationScope
+     * @param string $name
+     * @param string|null $unit
+     * @param string|null $description
+     * @param iterable<string, scalar|scalar[]> $attributes
+     */
     public function __construct(
         protected MeterStorageInterface $storage,
         protected InstrumentationScopeInterface $instrumentationScope,
         string $name,
         protected ?string $unit                 = null,
         protected ?string $description          = null,
-        array $attributes                       = []
+        iterable $attributes                    = []
     ) {
         $this->name                 = $name;
         $this->attributes           = $attributes;
@@ -32,7 +40,7 @@ abstract class MeterAbstract implements MeterInterface
     }
 
     #[\Override]
-    public function add(mixed $value, array $attributes = []): void
+    public function add(mixed $value, iterable $attributes = []): void
     {
         $this->storage->record($this, $value, $attributes);
     }

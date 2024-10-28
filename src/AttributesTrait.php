@@ -25,15 +25,23 @@ trait AttributesTrait
         return $this->attributes;
     }
 
-    public function setAttributes(array $attributes): static
+    public function setAttributes(iterable $attributes): static
     {
+        if (!\is_array($attributes)) {
+            $attributes             = \iterator_to_array($attributes);
+        }
+
         $this->attributes           = $attributes;
 
         return $this;
     }
 
-    public function addAttributes(array $attributes): static
+    public function addAttributes(iterable $attributes): static
     {
+        if (!\is_array($attributes)) {
+            $attributes             = \iterator_to_array($attributes);
+        }
+
         $this->attributes           = \array_merge($this->attributes, $attributes);
 
         return $this;

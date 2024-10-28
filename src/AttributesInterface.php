@@ -12,9 +12,9 @@ interface AttributesInterface
 
     public function getAttributes(): array;
 
-    public function setAttributes(array $attributes): static;
+    public function setAttributes(iterable $attributes): static;
 
-    public function addAttributes(array $attributes): static;
+    public function addAttributes(iterable $attributes): static;
 
     public function hasAttribute(string $key): bool;
 

@@ -10,6 +10,11 @@ class Event implements ElementInterface, AttributesInterface, TimestampInterface
     use AttributesTrait;
     use TimestampTrait;
 
+    /**
+     * @param string $name
+     * @param iterable<string, scalar|scalar[]> $attributes
+     * @param int|null $timestamp   Unix nano timestamp
+     */
     public function __construct(string $name, iterable $attributes = [], ?int $timestamp = null)
     {
         $this->name                 = $name;
