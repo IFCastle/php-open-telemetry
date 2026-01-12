@@ -1,0 +1,31 @@
+{
+    "name": "ifcastle/open-telemetry",
+    "description": "Simplified library for OpenTelemetry.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": ["open-telemetry", "opentelemetry", "tracing", "instrumentation"],
+    "autoload": {
+        "psr-4": {
+            "IfCastle\\OpenTelemetry\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "IfCastle\\OpenTelemetry\\": "tests/"
+        }
+    },
+    "require": {
+        "php": ">=8.3",
+        "psr/log": "^3.0"
+    },
+    "require-dev": {
+        "ifcastle/codestyle": "^0.1.7",
+        "phpstan/phpstan": "^1.12",
+        "ifcastle/exceptions": "^5.1",
+        "phpunit/phpunit": "^11.4"
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit ./tests",
+        "analysis": "phpstan"
+    }
+}

@@ -1,0 +1,19 @@
+<?php
+
+declare(strict_types=1);
+
+namespace IfCastle\OpenTelemetry\Metrics;
+
+use IfCastle\OpenTelemetry\AttributesInterface;
+use IfCastle\OpenTelemetry\ElementInterface;
+
+interface MeterInterface extends AttributesInterface, ElementInterface
+{
+    public function getMeterId(): string;
+
+    /**
+     * @param mixed $value
+     * @param iterable<string, scalar|scalar[]> $attributes
+     */
+    public function add(mixed $value, iterable $attributes = []): void;
+}
