@@ -27,5 +27,10 @@
     "scripts": {
         "test": "vendor/bin/phpunit ./tests",
         "analysis": "phpstan"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.0.x-dev"
+        }
     }
 }
