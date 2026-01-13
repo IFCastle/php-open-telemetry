@@ -11,9 +11,6 @@ class InstrumentationScope implements InstrumentationScopeInterface
     use AttributesTrait;
 
     /**
-     * @param string $name
-     * @param string|null $version
-     * @param string $schemaUrl
      * @param array<string, scalar|null> $attributes
      */
     public function __construct(

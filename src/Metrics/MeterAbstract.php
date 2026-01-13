@@ -14,11 +14,6 @@ abstract class MeterAbstract implements MeterInterface
     use AttributesTrait;
 
     /**
-     * @param MeterStorageInterface $storage
-     * @param InstrumentationScopeInterface $instrumentationScope
-     * @param string $name
-     * @param string|null $unit
-     * @param string|null $description
      * @param iterable<string, scalar|scalar[]> $attributes
      */
     public function __construct(

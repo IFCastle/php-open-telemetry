@@ -7,14 +7,12 @@ namespace IfCastle\OpenTelemetry;
 interface TraceExporterInterface
 {
     /**
-     * @param ResourceInterface $resource
      * @param array<InstrumentationScopeInterface> $instrumentationScopes
      * @param array<string, SpanInterface[]> $spansByScope
      */
     public function exportTraces(ResourceInterface $resource, array $instrumentationScopes, array $spansByScope): void;
 
     /**
-     * @param ResourceInterface $resource
      * @param array<InstrumentationScopeInterface> $instrumentationScopes
      * @param array<string, Log[]> $logsByScope
      */

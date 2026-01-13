@@ -60,7 +60,7 @@ class SystemResourceBuilder
 
         // Add Jit information
         if (\function_exists('opcache_get_status')) {
-            $opcacheStatus          = opcache_get_status(false);
+            $opcacheStatus          = \opcache_get_status(false);
 
             if ($opcacheStatus !== false) {
                 $attributes['process.runtime.jit.enabled']      = $opcacheStatus['jit']['enabled'];

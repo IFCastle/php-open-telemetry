@@ -11,7 +11,6 @@ class Event implements ElementInterface, AttributesInterface, TimestampInterface
     use TimestampTrait;
 
     /**
-     * @param string $name
      * @param iterable<string, scalar|scalar[]> $attributes
      * @param int|null $timestamp   Unix nano timestamp
      */

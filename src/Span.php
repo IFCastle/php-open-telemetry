@@ -23,7 +23,7 @@ class Span implements SpanInterface
     protected int $startTime         = 0;
 
     protected int $endTime           = 0;
-    
+
     protected StatusCodeEnum $status = StatusCodeEnum::STATUS_UNSET;
 
     protected string $statusDescription = '';

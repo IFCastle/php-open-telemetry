@@ -9,14 +9,8 @@ use IfCastle\OpenTelemetry\InstrumentationScopeInterface;
 interface MeterProviderInterface
 {
     /**
-     * @param InstrumentationScopeInterface $instrumentationScope
-     * @param string                        $name
-     * @param string|null                   $unit
-     * @param string|null                   $description
      * @param iterable<string, scalar|scalar[]> $attributes
-     * @param bool                          $isReset
      *
-     * @return MeterInterface
      */
     public function registerCounter(
         InstrumentationScopeInterface $instrumentationScope,
@@ -28,14 +22,8 @@ interface MeterProviderInterface
     ): MeterInterface;
 
     /**
-     * @param InstrumentationScopeInterface $instrumentationScope
-     * @param string                        $name
-     * @param string|null                   $unit
-     * @param string|null                   $description
      * @param iterable<string, scalar|scalar[]> $attributes
-     * @param bool                          $isReset
      *
-     * @return MeterInterface
      */
     public function registerUpDownCounter(
         InstrumentationScopeInterface $instrumentationScope,
@@ -47,14 +35,8 @@ interface MeterProviderInterface
     ): MeterInterface;
 
     /**
-     * @param InstrumentationScopeInterface $instrumentationScope
-     * @param string                        $name
-     * @param string|null                   $unit
-     * @param string|null                   $description
      * @param iterable<string, scalar|scalar[]> $attributes
-     * @param bool                          $isReset
      *
-     * @return MeterInterface
      */
     public function registerGauge(
         InstrumentationScopeInterface $instrumentationScope,
@@ -66,14 +48,8 @@ interface MeterProviderInterface
     ): MeterInterface;
 
     /**
-     * @param InstrumentationScopeInterface $instrumentationScope
-     * @param string                        $name
-     * @param string|null                   $unit
-     * @param string|null                   $description
      * @param iterable<string, scalar|scalar[]> $attributes
-     * @param bool                          $isReset
      *
-     * @return MeterInterface
      */
     public function registerHistogram(
         InstrumentationScopeInterface $instrumentationScope,
@@ -85,14 +61,8 @@ interface MeterProviderInterface
     ): MeterInterface;
 
     /**
-     * @param InstrumentationScopeInterface $instrumentationScope
-     * @param string                        $name
-     * @param string|null                   $unit
-     * @param string|null                   $description
      * @param iterable<string, scalar|scalar[]> $attributes
-     * @param bool                          $isReset
      *
-     * @return MeterInterface
      */
     public function registerSummary(
         InstrumentationScopeInterface $instrumentationScope,
@@ -104,13 +74,8 @@ interface MeterProviderInterface
     ): MeterInterface;
 
     /**
-     * @param InstrumentationScopeInterface $instrumentationScope
-     * @param string                        $name
-     * @param string|null                   $description
      * @param iterable<string, scalar|scalar[]> $attributes
-     * @param bool                          $isReset
      *
-     * @return StateInterface
      */
     public function registerState(
         InstrumentationScopeInterface $instrumentationScope,

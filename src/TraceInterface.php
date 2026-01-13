@@ -25,12 +25,8 @@ interface TraceInterface
     public function findInstrumentationScopeId(InstrumentationScopeInterface $instrumentationScope): string;
 
     /**
-     * @param string $spanName
-     * @param SpanKindEnum $spanKind
-     * @param InstrumentationScopeInterface|null $instrumentationScope
      * @param iterable<string, scalar|null> $attributes
      *
-     * @return SpanInterface
      */
     public function createSpan(
         string                        $spanName,

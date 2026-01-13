@@ -19,12 +19,12 @@ namespace IfCastle\OpenTelemetry;
 class TraceState implements AttributesInterface, \Stringable
 {
     use AttributesTrait;
-    
+
     public const int MAX_LIST_MEMBERS             = 32;
-    
+
     //@see https://www.w3.org/TR/trace-context/#tracestate-header-field-values
     public const int MAX_COMBINED_LENGTH          = 512;
-    
+
     //@see https://www.w3.org/TR/trace-context/#tracestate-limits
     public const string LIST_MEMBERS_SEPARATOR         = ',';
 

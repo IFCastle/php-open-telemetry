@@ -9,11 +9,6 @@ use IfCastle\OpenTelemetry\InstrumentationScopeInterface;
 class State extends MeterAbstract implements StateInterface
 {
     /**
-     * @param MeterStorageInterface         $storage
-     * @param InstrumentationScopeInterface $instrumentationScope
-     * @param string                        $name
-     * @param string|null                   $unit
-     * @param string|null                   $description
      * @param array<string, scalar|null>    $attributes
      */
     public function __construct(
