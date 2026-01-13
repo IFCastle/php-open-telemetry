@@ -8,5 +8,5 @@ return static function (RectorConfig $rectorConfig): void {
         __DIR__ . '/src'
     ]);
     
-    (new \IfCastle\CodeStyle\Rector\RectorConfigurator())->configureSets($rectorConfig);
+    new \IfCastle\CodeStyle\Rector\RectorConfigurator()->configureSets($rectorConfig);
 };

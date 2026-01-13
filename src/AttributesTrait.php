@@ -79,7 +79,7 @@ trait AttributesTrait
         $result                     = [];
 
         foreach ($this->attributes as $key => $value) {
-            if (\str_starts_with($key, $prefix)) {
+            if (\str_starts_with((string) $key, $prefix)) {
                 $result[$key]       = $value;
             }
         }
@@ -92,7 +92,7 @@ trait AttributesTrait
         $prefix .= '.';
 
         foreach ($this->attributes as $key => $value) {
-            if (\str_starts_with($key, $prefix)) {
+            if (\str_starts_with((string) $key, $prefix)) {
                 return $value;
             }
         }

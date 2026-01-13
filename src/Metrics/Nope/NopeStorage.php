@@ -11,6 +11,4 @@ final readonly class NopeStorage implements MeterStorageInterface
 {
     #[\Override]
     public function record(MeterInterface $meter, mixed $value, iterable $attributes = []): void {}
-
-    public function reset(MeterInterface $meter): void {}
 }

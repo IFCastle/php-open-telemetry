@@ -25,7 +25,7 @@ final class ExceptionFormatter implements ExceptionFormatterInterface
     }
 
     #[\Override]
-    public function buildExceptionReport(\Throwable $throwable): array|string
+    public function buildExceptionReport(\Throwable $throwable): string
     {
         return $throwable->getMessage();
     }
